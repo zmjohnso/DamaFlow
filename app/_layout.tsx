@@ -1,24 +1,41 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Redirect, Stack, ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { PaperProvider, Text, Button } from 'react-native-paper';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { db, runMigrations } from '@/lib/db/client';
+import { seedSkillCatalog } from '@/lib/db/seed';
+import { getSetting } from '@/lib/db/queries';
+import { lightTheme, darkTheme } from '@/lib/theme';
+import useQueueStore from '@/store/queueStore';
+import useAppStore from '@/store/appStore';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  console.error('[ErrorBoundary]', error);
+  return (
+    <PaperProvider>
+      <View style={styles.errorContainer}>
+        <Text variant="headlineSmall">Something went wrong</Text>
+        <Text variant="bodyMedium" style={styles.errorMessage}>
+          An unexpected error occurred. Your data is safe.
+        </Text>
+        <Button mode="contained" onPress={retry} style={styles.errorButton}>
+          Restart the app
+        </Button>
+      </View>
+    </PaperProvider>
+  );
+}
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -26,34 +43,55 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  const [dbReady, setDbReady] = useState(false);
+  const onboardingComplete = useAppStore(state => state.onboardingComplete);
+  const [dbError, setDbError] = useState<Error | null>(null);
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+    if (dbError) throw dbError;
+  }, [dbError]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    runMigrations()
+      .then(() => {
+        seedSkillCatalog(db);
+        const setting = getSetting(db, 'onboarding_complete');
+        useAppStore.getState().setOnboardingComplete(!!setting);
+        useQueueStore.getState().loadQueue();
+        setDbReady(true);
+      })
+      .catch((e) => setDbError(e instanceof Error ? e : new Error(String(e))));
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  useEffect(() => {
+    if (dbReady) SplashScreen.hideAsync();
+  }, [dbReady]);
 
-  return <RootLayoutNav />;
+  if (!loaded || !dbReady) return null;
+  return <RootLayoutNav onboardingComplete={onboardingComplete} />;
 }
 
-function RootLayoutNav() {
+function RootLayoutNav({ onboardingComplete }: { onboardingComplete: boolean }) {
   const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <PaperProvider theme={colorScheme === 'dark' ? darkTheme : lightTheme}>
+      {!onboardingComplete && <Redirect href="/onboarding" />}
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
       </Stack>
-    </ThemeProvider>
+    </PaperProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  errorContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
+  errorMessage: { marginTop: 8, marginBottom: 24, textAlign: 'center' },
+  errorButton: { marginTop: 8 },
+});

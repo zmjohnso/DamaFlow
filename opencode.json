@@ -1,0 +1,209 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "command": {
+    "bmad-help": {
+      "description": "BMad Help - show what to do next in your BMad workflow",
+      "template": "Use the bmad-help skill. $ARGUMENTS"
+    },
+    "bmad-product-brief": {
+      "description": "Create Brief - guided experience to nail down your product idea",
+      "template": "Use the bmad-product-brief skill. $ARGUMENTS"
+    },
+    "bmad-brainstorming": {
+      "description": "Brainstorm - expert guided facilitation through brainstorming techniques",
+      "template": "Use the bmad-brainstorming skill. $ARGUMENTS"
+    },
+    "bmad-domain-research": {
+      "description": "Domain Research - industry domain deep dive, subject matter expertise and terminology",
+      "template": "Use the bmad-domain-research skill. $ARGUMENTS"
+    },
+    "bmad-market-research": {
+      "description": "Market Research - market analysis, competitive landscape, customer needs and trends",
+      "template": "Use the bmad-market-research skill. $ARGUMENTS"
+    },
+    "bmad-technical-research": {
+      "description": "Technical Research - technical feasibility, architecture options and implementation approaches",
+      "template": "Use the bmad-technical-research skill. $ARGUMENTS"
+    },
+    "bmad-create-prd": {
+      "description": "Create PRD - expert led facilitation to produce your Product Requirements Document",
+      "template": "Use the bmad-create-prd skill. $ARGUMENTS"
+    },
+    "bmad-validate-prd": {
+      "description": "Validate PRD - validate a PRD against standards",
+      "template": "Use the bmad-validate-prd skill. $ARGUMENTS"
+    },
+    "bmad-edit-prd": {
+      "description": "Edit PRD - edit an existing PRD",
+      "template": "Use the bmad-edit-prd skill. $ARGUMENTS"
+    },
+    "bmad-create-ux": {
+      "description": "Create UX - guidance through realizing your UX plan",
+      "template": "Use the bmad-create-ux-design skill. $ARGUMENTS"
+    },
+    "bmad-create-architecture": {
+      "description": "Create Architecture - guided workflow to document technical decisions",
+      "template": "Use the bmad-create-architecture skill. $ARGUMENTS"
+    },
+    "bmad-check-readiness": {
+      "description": "Check Implementation Readiness - ensure PRD, UX, Architecture and Epics/Stories are aligned",
+      "template": "Use the bmad-check-implementation-readiness skill. $ARGUMENTS"
+    },
+    "bmad-create-epics": {
+      "description": "Create Epics and Stories - break requirements into epics and user stories",
+      "template": "Use the bmad-create-epics-and-stories skill. $ARGUMENTS"
+    },
+    "bmad-create-story": {
+      "description": "Create Story - prepare next story in the sprint plan for implementation",
+      "template": "Use the bmad-create-story skill with the create action. $ARGUMENTS"
+    },
+    "bmad-validate-story": {
+      "description": "Validate Story - validate story readiness before development begins",
+      "template": "Use the bmad-create-story skill with the validate action. $ARGUMENTS"
+    },
+    "bmad-sprint-planning": {
+      "description": "Sprint Planning - produce a plan the implementation agents will follow for every story",
+      "template": "Use the bmad-sprint-planning skill. $ARGUMENTS"
+    },
+    "bmad-dev-story": {
+      "description": "Dev Story - execute story implementation tasks and tests",
+      "template": "Use the bmad-dev-story skill. $ARGUMENTS"
+    },
+    "bmad-code-review": {
+      "description": "Code Review - review story implementation for quality and correctness",
+      "template": "Use the bmad-code-review skill. $ARGUMENTS"
+    },
+    "bmad-qa-tests": {
+      "description": "QA Automation Test - generate automated API and E2E tests for implemented code",
+      "template": "Use the bmad-qa-generate-e2e-tests skill. $ARGUMENTS"
+    },
+    "bmad-sprint-status": {
+      "description": "Sprint Status - summarize sprint status and route to next workflow",
+      "template": "Use the bmad-sprint-status skill. $ARGUMENTS"
+    },
+    "bmad-retrospective": {
+      "description": "Retrospective - review completed epic, lessons learned",
+      "template": "Use the bmad-retrospective skill. $ARGUMENTS"
+    },
+    "bmad-correct-course": {
+      "description": "Correct Course - navigate significant changes mid-sprint",
+      "template": "Use the bmad-correct-course skill. $ARGUMENTS"
+    },
+    "bmad-quick-dev": {
+      "description": "Quick Dev - unified intent-in code-out workflow: clarify, plan, implement, review",
+      "template": "Use the bmad-quick-dev skill. $ARGUMENTS"
+    },
+    "bmad-generate-context": {
+      "description": "Generate Project Context - scan existing codebase to generate a lean LLM-optimized project-context.md",
+      "template": "Use the bmad-generate-project-context skill. $ARGUMENTS"
+    },
+    "bmad-document-project": {
+      "description": "Document Project - analyze existing project to produce useful documentation",
+      "template": "Use the bmad-document-project skill. $ARGUMENTS"
+    },
+    "bmad-adversarial-review": {
+      "description": "Adversarial Review - cynical quality review before finalizing deliverables",
+      "template": "Use the bmad-review-adversarial-general skill. $ARGUMENTS"
+    },
+    "bmad-edge-case-review": {
+      "description": "Edge Case Hunter - walk every branching path and boundary condition",
+      "template": "Use the bmad-review-edge-case-hunter skill. $ARGUMENTS"
+    },
+    "bmad-editorial-prose": {
+      "description": "Editorial Review (Prose) - polish written content after drafting",
+      "template": "Use the bmad-editorial-review-prose skill. $ARGUMENTS"
+    },
+    "bmad-editorial-structure": {
+      "description": "Editorial Review (Structure) - structural improvement for documents",
+      "template": "Use the bmad-editorial-review-structure skill. $ARGUMENTS"
+    },
+    "bmad-shard-doc": {
+      "description": "Shard Document - split large documents into smaller organized files",
+      "template": "Use the bmad-shard-doc skill. $ARGUMENTS"
+    },
+    "bmad-distillator": {
+      "description": "Distillator - token-efficient lossless compression of documents for LLM consumption",
+      "template": "Use the bmad-distillator skill. $ARGUMENTS"
+    },
+    "bmad-index-docs": {
+      "description": "Index Docs - generate an index.md for available docs",
+      "template": "Use the bmad-index-docs skill. $ARGUMENTS"
+    },
+    "bmad-party-mode": {
+      "description": "Party Mode - orchestrate multi-agent discussions with multiple perspectives",
+      "template": "Use the bmad-party-mode skill. $ARGUMENTS"
+    },
+    "bmad-build-agent": {
+      "description": "Build an Agent - create or edit an agent skill through conversational discovery",
+      "template": "Use the bmad-agent-builder skill with the build-process action. $ARGUMENTS"
+    },
+    "bmad-analyze-agent": {
+      "description": "Analyze an Agent - run quality analysis on an existing agent",
+      "template": "Use the bmad-agent-builder skill with the quality-analysis action. $ARGUMENTS"
+    },
+    "bmad-build-workflow": {
+      "description": "Build a Workflow - create or edit a workflow/utility skill",
+      "template": "Use the bmad-workflow-builder skill with the build-process action. $ARGUMENTS"
+    },
+    "bmad-analyze-workflow": {
+      "description": "Analyze a Workflow - quality analysis on an existing workflow/skill",
+      "template": "Use the bmad-workflow-builder skill with the quality-analysis action. $ARGUMENTS"
+    },
+    "bmad-convert-skill": {
+      "description": "Convert a Skill - convert any skill to BMad-compliant equivalent",
+      "template": "Use the bmad-workflow-builder skill with the convert-process action. $ARGUMENTS"
+    },
+    "bmad-write-doc": {
+      "description": "Write Document - produce a document following documentation best practices",
+      "template": "Use the bmad-agent-tech-writer skill with the write action. $ARGUMENTS"
+    },
+    "bmad-mermaid": {
+      "description": "Mermaid Generate - create a Mermaid diagram from description",
+      "template": "Use the bmad-agent-tech-writer skill with the mermaid action. $ARGUMENTS"
+    },
+    "bmad-validate-doc": {
+      "description": "Validate Document - review document against documentation standards",
+      "template": "Use the bmad-agent-tech-writer skill with the validate action. $ARGUMENTS"
+    },
+    "bmad-explain-concept": {
+      "description": "Explain Concept - create clear technical explanations with examples and diagrams",
+      "template": "Use the bmad-agent-tech-writer skill with the explain action. $ARGUMENTS"
+    },
+    "bmad-teach-testing": {
+      "description": "Teach Me Testing - learn testing fundamentals through structured sessions (TEA Academy)",
+      "template": "Use the bmad-teach-me-testing skill. $ARGUMENTS"
+    },
+    "bmad-atdd": {
+      "description": "ATDD - generate failing acceptance tests (TDD red phase)",
+      "template": "Use the bmad-testarch-atdd skill. $ARGUMENTS"
+    },
+    "bmad-test-automation": {
+      "description": "Test Automation - expand test coverage",
+      "template": "Use the bmad-testarch-automate skill. $ARGUMENTS"
+    },
+    "bmad-test-framework": {
+      "description": "Test Framework - initialize production-ready test framework with Playwright or Cypress",
+      "template": "Use the bmad-testarch-framework skill. $ARGUMENTS"
+    },
+    "bmad-ci-setup": {
+      "description": "CI Setup - configure CI/CD quality pipeline",
+      "template": "Use the bmad-testarch-ci skill. $ARGUMENTS"
+    },
+    "bmad-test-design": {
+      "description": "Test Design - risk-based test planning",
+      "template": "Use the bmad-testarch-test-design skill. $ARGUMENTS"
+    },
+    "bmad-test-review": {
+      "description": "Test Review - quality audit with 0-100 scoring",
+      "template": "Use the bmad-testarch-test-review skill. $ARGUMENTS"
+    },
+    "bmad-nfr": {
+      "description": "NFR Assessment - non-functional requirements assessment (performance, security, reliability)",
+      "template": "Use the bmad-testarch-nfr skill. $ARGUMENTS"
+    },
+    "bmad-traceability": {
+      "description": "Traceability - coverage traceability matrix and quality gate decision",
+      "template": "Use the bmad-testarch-trace skill. $ARGUMENTS"
+    }
+  }
+}

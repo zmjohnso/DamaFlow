@@ -1,22 +1,28 @@
 {
   "expo": {
-    "name": "DamaFlow-init",
-    "slug": "DamaFlow-init",
+    "name": "DamaFlow",
+    "slug": "damaflow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "damaflowinit",
+    "scheme": "damaflow",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "updates": {
+      "enabled": false
+    },
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.damaflow.app",
+      "supportsTablet": false
     },
     "android": {
+      "package": "com.damaflow.app",
+      "enableAndroidFirebaseMessagingConfig": false,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -30,7 +36,10 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-sqlite",
+      "expo-notifications",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true
