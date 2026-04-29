@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# AI tooling / local dev artifacts
+_bmad/
+_bmad-output/
+.opencode/
+.claude/
