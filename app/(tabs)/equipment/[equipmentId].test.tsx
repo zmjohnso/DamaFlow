@@ -50,7 +50,7 @@ jest.mock('@react-native-community/datetimepicker', () => {
 });
 
 function Wrapper({ children }: { children: React.ReactNode }) {
-  return <PaperProvider>{children}</PaperProvider>;
+  return <PaperProvider theme={{ animation: { scale: 0 } }}>{children}</PaperProvider>;
 }
 
 describe('EquipmentDetailScreen', () => {
