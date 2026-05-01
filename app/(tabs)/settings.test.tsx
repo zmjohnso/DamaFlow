@@ -1,4 +1,5 @@
 import React from 'react';
+import { NativeModules } from 'react-native';
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
 import SettingsScreen from './settings';
@@ -91,6 +92,15 @@ describe('SettingsScreen', () => {
     mockResetAllData.mockReset();
     mockReplace.mockReset();
     mockLoadQueue.mockReset();
+
+    jest.spyOn(NativeModules.NativeAnimatedModule, 'startAnimatingNode')
+      .mockImplementation((_animationId, _nodeTag, _config, endCallback) => {
+        endCallback({ finished: true });
+      });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   // ── Existing new_skill_cap tests ──

@@ -1,4 +1,5 @@
 import React from 'react';
+import { NativeModules } from 'react-native';
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
 import EquipmentDetailScreen from './[equipmentId]';
@@ -64,6 +65,15 @@ describe('EquipmentDetailScreen', () => {
 
     const { useLocalSearchParams } = require('expo-router');
     useLocalSearchParams.mockReturnValue({ equipmentId: '1' });
+
+    jest.spyOn(NativeModules.NativeAnimatedModule, 'startAnimatingNode')
+      .mockImplementation((_animationId, _nodeTag, _config, endCallback) => {
+        endCallback({ finished: true });
+      });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('renders not found when equipment does not exist', async () => {
