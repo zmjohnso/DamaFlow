@@ -13,7 +13,12 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const theme = useTheme();
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: theme.colors.primary, headerShown: false }}>
+    <Tabs screenOptions={{
+      tabBarActiveTintColor: theme.colors.primary,
+      tabBarInactiveTintColor: theme.colors.onSurfaceVariant,
+      tabBarStyle: { backgroundColor: theme.colors.surface },
+      headerShown: false,
+    }}>
       <Tabs.Screen
         name="practice"
         options={{

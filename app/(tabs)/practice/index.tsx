@@ -92,7 +92,7 @@ export default function TodayScreen() {
   const dueTodayCount = overdueItems.length + dueItems.length;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       {/* Stat chips row */}
       <View style={styles.chipsRow}>
         {/* Due today chip — non-interactive */}
@@ -130,7 +130,7 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {sessionsThisWeek}
             </Text>
-            <Text variant="labelSmall" numberOfLines={1} adjustsFontSizeToFit style={{ color: theme.colors.onSurfaceVariant }}>
+            <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}>
               this week
             </Text>
           </Surface>
@@ -216,9 +216,10 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderRadius: 12,
-    paddingVertical: 8,
     paddingHorizontal: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    height: 72,
   },
   sectionHeader: {
     paddingHorizontal: 16,

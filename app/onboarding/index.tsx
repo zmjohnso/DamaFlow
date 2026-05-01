@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet, View } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { Button, Text, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { router } from 'expo-router';
@@ -13,6 +13,7 @@ import OnboardingSkillRow from '@/components/OnboardingSkillRow';
 type Step = 'welcome' | 'beginner' | 'intermediate' | 'advanced' | 'complete';
 
 export default function OnboardingScreen() {
+  const theme = useTheme();
   const [step, setStep] = useState<Step>('welcome');
   const [markedIds, setMarkedIds] = useState<Set<number>>(new Set());
   const [hasMarked, setHasMarked] = useState(false);
@@ -90,7 +91,7 @@ export default function OnboardingScreen() {
 
   if (step === 'welcome') {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.welcomeContent}>
           <Text variant="displaySmall" style={styles.welcomeMessage}>
             DamaFlow tracks your skills and tells you what to practice today
@@ -120,7 +121,7 @@ export default function OnboardingScreen() {
     }
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.welcomeContent}>
           <Text variant="headlineMedium" style={styles.completeHeading}>
             Here's what happens next
