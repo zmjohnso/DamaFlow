@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { SectionList, StyleSheet, View, useColorScheme } from 'react-native';
-import { Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import EmptyQueueState from '@/components/EmptyQueueState';
-import SkillQueueItem from '@/components/SkillQueueItem';
-import { db } from '@/lib/db/client';
-import { getMasteredCount, getSessionsThisWeek, getSetting, setSetting } from '@/lib/db/queries';
-import { requestAndConfigureNotifications } from '@/lib/notifications';
-import { customColors } from '@/lib/theme';
-import useQueueStore from '@/store/queueStore';
-import type { QueueItem } from '@/store/queueStore';
+import EmptyQueueState from "@/components/EmptyQueueState";
+import SkillQueueItem from "@/components/SkillQueueItem";
+import { db } from "@/lib/db/client";
+import {
+  getMasteredCount,
+  getSessionsThisWeek,
+  getSetting,
+  setSetting,
+} from "@/lib/db/queries";
+import { requestAndConfigureNotifications } from "@/lib/notifications";
+import { customColors } from "@/lib/theme";
+import type { QueueItem } from "@/store/queueStore";
+import useQueueStore from "@/store/queueStore";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { SectionList, StyleSheet, View, useColorScheme } from "react-native";
+import { Surface, Text, TouchableRipple, useTheme } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 function getWeekStart(): string {
   const now = new Date();
@@ -25,7 +30,8 @@ function getWeekStart(): string {
 function computeDaysOverdue(dueIso: string, todayStr: string): number {
   const msPerDay = 1000 * 60 * 60 * 24;
   return Math.floor(
-    (new Date(todayStr).getTime() - new Date(dueIso.slice(0, 10)).getTime()) / msPerDay
+    (new Date(todayStr).getTime() - new Date(dueIso.slice(0, 10)).getTime()) /
+      msPerDay,
   );
 }
 
@@ -34,9 +40,9 @@ type Section = { title: string; data: QueueItem[]; key: string };
 export default function TodayScreen() {
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  const overdueColor = customColors[colorScheme ?? 'light'].overdue;
+  const overdueColor = customColors[colorScheme ?? "light"].overdue;
 
-  const queue = useQueueStore(state => state.queue);
+  const queue = useQueueStore((state) => state.queue);
   const [masteredCount, setMasteredCount] = useState(0);
   const [sessionsThisWeek, setSessionsThisWeek] = useState(0);
   const [isFirstCompletion, setIsFirstCompletion] = useState(false);
@@ -53,9 +59,9 @@ export default function TodayScreen() {
   useEffect(() => {
     if (queue.length !== 0) return;
     try {
-      const seen = getSetting(db, 'first_completion_shown');
+      const seen = getSetting(db, "first_completion_shown");
       if (seen === undefined) {
-        setSetting(db, 'first_completion_shown', 'true');
+        setSetting(db, "first_completion_shown", "true");
         setIsFirstCompletion(true);
       }
     } catch {
@@ -65,9 +71,9 @@ export default function TodayScreen() {
 
   useEffect(() => {
     try {
-      const pending = getSetting(db, 'pending_notification_prompt');
-      if (pending === 'true') {
-        setSetting(db, 'pending_notification_prompt', 'false');
+      const pending = getSetting(db, "pending_notification_prompt");
+      if (pending === "true") {
+        setSetting(db, "pending_notification_prompt", "false");
         requestAndConfigureNotifications(db).catch(() => {
           // Silently ignore notification errors — queue must render regardless
         });
@@ -75,24 +81,33 @@ export default function TodayScreen() {
     } catch {
       // silently ignore — queue render is never blocked
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const today = new Date().toLocaleDateString('sv');
+  const today = new Date().toLocaleDateString("sv");
 
-  const overdueItems = queue.filter(i => i.state !== 0 && i.due.slice(0, 10) < today);
-  const dueItems     = queue.filter(i => i.state !== 0 && i.due.slice(0, 10) >= today);
-  const newItems     = queue.filter(i => i.state === 0);
+  const overdueItems = queue.filter(
+    (i) => i.state !== 0 && i.due.slice(0, 10) < today,
+  );
+  const dueItems = queue.filter(
+    (i) => i.state !== 0 && i.due.slice(0, 10) >= today,
+  );
+  const newItems = queue.filter((i) => i.state === 0);
 
   const sections: Section[] = [];
-  if (overdueItems.length > 0) sections.push({ title: 'Overdue',    data: overdueItems, key: 'overdue' });
-  if (dueItems.length     > 0) sections.push({ title: 'Due Today',  data: dueItems,     key: 'due-today' });
-  if (newItems.length     > 0) sections.push({ title: 'New Skills', data: newItems,      key: 'new' });
+  if (overdueItems.length > 0)
+    sections.push({ title: "Overdue", data: overdueItems, key: "overdue" });
+  if (dueItems.length > 0)
+    sections.push({ title: "Due Today", data: dueItems, key: "due-today" });
+  if (newItems.length > 0)
+    sections.push({ title: "New Skills", data: newItems, key: "new" });
 
   const dueTodayCount = overdueItems.length + dueItems.length;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={["top"]}
+    >
       {/* Stat chips row */}
       <View style={styles.chipsRow}>
         {/* Due today chip — non-interactive */}
@@ -101,7 +116,12 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {dueTodayCount}
             </Text>
-            <Text variant="labelSmall" numberOfLines={1} adjustsFontSizeToFit style={{ color: theme.colors.onSurfaceVariant }}>
+            <Text
+              variant="labelSmall"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ color: theme.colors.onSurfaceVariant }}
+            >
               due today
             </Text>
           </Surface>
@@ -110,7 +130,7 @@ export default function TodayScreen() {
         {/* Mastered chip — tappable */}
         <TouchableRipple
           style={styles.chipWrapper}
-          onPress={() => router.push('/(tabs)/practice/progress')}
+          onPress={() => router.push("/(tabs)/practice/progress")}
           accessibilityRole="button"
           accessibilityLabel={`View progress — ${masteredCount} skills mastered`}
         >
@@ -118,7 +138,12 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {masteredCount}
             </Text>
-            <Text variant="labelSmall" numberOfLines={1} adjustsFontSizeToFit style={{ color: theme.colors.onSurfaceVariant }}>
+            <Text
+              variant="labelSmall"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ color: theme.colors.onSurfaceVariant }}
+            >
               mastered
             </Text>
           </Surface>
@@ -130,7 +155,12 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {sessionsThisWeek}
             </Text>
-            <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}>
+            <Text
+              variant="labelSmall"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ color: theme.colors.onSurfaceVariant }}
+            >
               this week
             </Text>
           </Surface>
@@ -140,21 +170,22 @@ export default function TodayScreen() {
       {sections.length === 0 ? (
         <EmptyQueueState
           isFirstCompletion={isFirstCompletion}
-          onStartNewSkill={() => router.navigate('/(tabs)/skills')}
+          onStartNewSkill={() => router.navigate("/(tabs)/skills")}
         />
       ) : (
         <SectionList
           sections={sections}
-          keyExtractor={item => String(item.skill_id)}
+          keyExtractor={(item) => String(item.skill_id)}
           contentContainerStyle={styles.listContent}
           renderSectionHeader={({ section }) => (
             <View style={styles.sectionHeader}>
               <Text
                 variant="labelLarge"
                 style={{
-                  color: section.key === 'overdue'
-                    ? overdueColor
-                    : theme.colors.onSurfaceVariant,
+                  color:
+                    section.key === "overdue"
+                      ? overdueColor
+                      : theme.colors.onSurfaceVariant,
                 }}
               >
                 {section.title}
@@ -162,17 +193,22 @@ export default function TodayScreen() {
             </View>
           )}
           renderItem={({ item, section }) => {
-            const isOverdue = section.key === 'overdue';
-            const isNew = section.key === 'new';
+            const isOverdue = section.key === "overdue";
+            const isNew = section.key === "new";
 
             if (isOverdue) {
               return (
                 <SkillQueueItem
                   skillName={item.skill_name}
-                  tier={item.tier as 'beginner' | 'intermediate' | 'advanced'}
+                  tier={item.tier as "beginner" | "intermediate" | "advanced"}
                   variant="overdue"
                   daysOverdue={computeDaysOverdue(item.due, today)}
-                  onPress={() => router.push({ pathname: '/(tabs)/practice/[skillId]', params: { skillId: item.skill_id } })}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(tabs)/practice/[skillId]",
+                      params: { skillId: item.skill_id },
+                    })
+                  }
                 />
               );
             }
@@ -181,9 +217,14 @@ export default function TodayScreen() {
               return (
                 <SkillQueueItem
                   skillName={item.skill_name}
-                  tier={item.tier as 'beginner' | 'intermediate' | 'advanced'}
+                  tier={item.tier as "beginner" | "intermediate" | "advanced"}
                   variant="new"
-                  onPress={() => router.push({ pathname: '/(tabs)/practice/[skillId]', params: { skillId: item.skill_id } })}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/(tabs)/practice/[skillId]",
+                      params: { skillId: item.skill_id },
+                    })
+                  }
                 />
               );
             }
@@ -191,9 +232,14 @@ export default function TodayScreen() {
             return (
               <SkillQueueItem
                 skillName={item.skill_name}
-                tier={item.tier as 'beginner' | 'intermediate' | 'advanced'}
+                tier={item.tier as "beginner" | "intermediate" | "advanced"}
                 variant="review"
-                onPress={() => router.push({ pathname: '/(tabs)/practice/[skillId]', params: { skillId: item.skill_id } })}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(tabs)/practice/[skillId]",
+                    params: { skillId: item.skill_id },
+                  })
+                }
               />
             );
           }}
@@ -206,7 +252,7 @@ export default function TodayScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   chipsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -217,8 +263,8 @@ const styles = StyleSheet.create({
   chip: {
     borderRadius: 12,
     paddingHorizontal: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     height: 72,
   },
   sectionHeader: {
