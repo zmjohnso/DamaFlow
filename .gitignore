@@ -45,3 +45,6 @@ _bmad/
 _bmad-output/
 .opencode/
 .claude/
+
+# Git worktrees
+.worktrees/
