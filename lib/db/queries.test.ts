@@ -82,10 +82,10 @@ function createTestDb() {
 }
 
 describe('getAllSkills', () => {
-  it('returns all 42 skills', () => {
+  it('returns all 69 skills', () => {
     const db = createTestDb();
     const result = getAllSkills(db);
-    expect(result).toHaveLength(42);
+    expect(result).toHaveLength(69);
   });
 
   it('returns skills ordered by sort_order ascending', () => {
@@ -109,21 +109,21 @@ describe('getSkillsByTier', () => {
   it('returns only beginner skills', () => {
     const db = createTestDb();
     const result = getSkillsByTier(db, 'beginner');
-    expect(result).toHaveLength(10);
+    expect(result).toHaveLength(18);
     expect(result.every((s) => s.tier === 'beginner')).toBe(true);
   });
 
   it('returns only intermediate skills', () => {
     const db = createTestDb();
     const result = getSkillsByTier(db, 'intermediate');
-    expect(result).toHaveLength(15);
+    expect(result).toHaveLength(24);
     expect(result.every((s) => s.tier === 'intermediate')).toBe(true);
   });
 
   it('returns only advanced skills', () => {
     const db = createTestDb();
     const result = getSkillsByTier(db, 'advanced');
-    expect(result).toHaveLength(17);
+    expect(result).toHaveLength(27);
     expect(result.every((s) => s.tier === 'advanced')).toBe(true);
   });
 
@@ -223,7 +223,7 @@ describe('getSkillsWithMastery', () => {
   it('returns all skills ordered by sort_order with real DB', () => {
     const db = createTestDb();
     const result = getSkillsWithMastery(db);
-    expect(result).toHaveLength(42);
+    expect(result).toHaveLength(69);
     for (let i = 1; i < result.length; i++) {
       expect(result[i].sort_order).toBeGreaterThan(result[i - 1].sort_order);
     }
@@ -384,8 +384,8 @@ describe('getSessionsThisWeek', () => {
 describe('getSkillsWithoutProgress', () => {
   it('returns all beginner skills when no progress rows exist', () => {
     const db = createTestDb();
-    const result = getSkillsWithoutProgress(db, 'beginner', 10);
-    expect(result).toHaveLength(10);
+    const result = getSkillsWithoutProgress(db, 'beginner', 18);
+    expect(result).toHaveLength(18);
     expect(result.every(s => s.tier === 'beginner')).toBe(true);
   });
 
@@ -406,8 +406,8 @@ describe('getSkillsWithoutProgress', () => {
     }));
     bulkInsertSkillProgress(db, rows);
 
-    const result = getSkillsWithoutProgress(db, 'beginner', 10);
-    expect(result).toHaveLength(7); // 10 beginner - 3 with progress = 7
+    const result = getSkillsWithoutProgress(db, 'beginner', 18);
+    expect(result).toHaveLength(15); // 18 beginner - 3 with progress = 15
     const resultIds = result.map(s => s.id);
     expect(resultIds).not.toContain(beginnerSkills[0].id);
     expect(resultIds).not.toContain(beginnerSkills[1].id);
@@ -953,10 +953,10 @@ describe('resetAllData', () => {
 
   it('preserves skills catalog rows', () => {
     const db = createTestDb();
-    expect(getAllSkills(db)).toHaveLength(42);
+    expect(getAllSkills(db)).toHaveLength(69);
 
     resetAllData(db);
 
-    expect(getAllSkills(db)).toHaveLength(42);
+    expect(getAllSkills(db)).toHaveLength(69);
   });
 });

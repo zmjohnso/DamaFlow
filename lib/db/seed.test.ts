@@ -85,9 +85,9 @@ describe('seedSkillCatalog', () => {
     const intermediates = db.select().from(skills).all().filter((s) => s.tier === 'intermediate');
     const advanced = db.select().from(skills).all().filter((s) => s.tier === 'advanced');
 
-    expect(beginners.length).toBe(10);
-    expect(intermediates.length).toBe(15);
-    expect(advanced.length).toBe(17);
+    expect(beginners.length).toBe(18);
+    expect(intermediates.length).toBe(24);
+    expect(advanced.length).toBe(27);
   });
 
   it('is idempotent — running twice produces same row count', () => {

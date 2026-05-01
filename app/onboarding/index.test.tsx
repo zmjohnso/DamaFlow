@@ -186,16 +186,16 @@ describe('OnboardingScreen', () => {
     expect(getByText("Based on what you've practiced, here are your first reviews. Rate each session and the app will schedule your next one.")).toBeTruthy();
   });
 
-  it('tapping "Start Learning →" calls router.replace("/(tabs)")', () => {
+  it('tapping "Start Learning →" calls router.replace("/(tabs)/practice")', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { router } = require('expo-router');
     const utils = render(<OnboardingScreen />, { wrapper: Wrapper });
     tapDoneNoMarks(utils);
     fireEvent.press(utils.getByText('Start Learning →'));
-    expect(router.replace).toHaveBeenCalledWith('/(tabs)');
+    expect(router.replace).toHaveBeenCalledWith('/(tabs)/practice');
   });
 
-  it('tapping "Start Reviewing →" calls router.replace("/(tabs)")', () => {
+  it('tapping "Start Reviewing →" calls router.replace("/(tabs)/practice")', () => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { router } = require('expo-router');
     const { getByText, getByLabelText } = render(<OnboardingScreen />, { wrapper: Wrapper });
@@ -205,7 +205,7 @@ describe('OnboardingScreen', () => {
     fireEvent.press(getByText('Next: Advanced →'));
     fireEvent.press(getByText("Done — I've marked what I know"));
     fireEvent.press(getByText('Start Reviewing →'));
-    expect(router.replace).toHaveBeenCalledWith('/(tabs)');
+    expect(router.replace).toHaveBeenCalledWith('/(tabs)/practice');
   });
 
   it('tapping Done with marked skills calls bulkInit with correct IDs', () => {
