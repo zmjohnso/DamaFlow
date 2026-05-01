@@ -2,6 +2,7 @@ import React from 'react';
 import { render, fireEvent, act, waitFor } from '@testing-library/react-native';
 import { PaperProvider } from 'react-native-paper';
 import SettingsScreen from './settings';
+import useAppStore from '../../store/appStore';
 
 const mockGetSetting = jest.fn();
 const mockSetSetting = jest.fn();
@@ -78,6 +79,7 @@ function Wrapper({ children }: { children: React.ReactNode }) {
 
 describe('SettingsScreen', () => {
   beforeEach(() => {
+    useAppStore.getState().setThemePreference('system');
     mockGetSetting.mockReset();
     mockSetSetting.mockReset();
     mockRequestPermissionsAsync.mockReset();
@@ -378,5 +380,87 @@ describe('SettingsScreen', () => {
 
     expect(getByText('Could not reset app data')).toBeTruthy();
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  // ── Appearance tests (Story 7.4) ──
+
+  it('renders Appearance section with System segment selected by default', async () => {
+    mockGetSetting.mockReturnValue(undefined);
+    const { getByText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    await act(async () => {});
+    expect(getByText('Appearance')).toBeTruthy();
+    expect(getByText('System')).toBeTruthy();
+    expect(getByText('Light')).toBeTruthy();
+    expect(getByText('Dark')).toBeTruthy();
+    expect(useAppStore.getState().themePreference).toBe('system');
+  });
+
+  it('tapping Dark calls setSetting and updates store to dark', async () => {
+    mockGetSetting.mockReturnValue(undefined);
+    const { getByLabelText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    await act(async () => {});
+
+    await act(async () => {
+      fireEvent.press(getByLabelText('Dark theme'));
+    });
+
+    expect(mockSetSetting).toHaveBeenCalledWith({}, 'theme_preference', 'dark');
+    expect(useAppStore.getState().themePreference).toBe('dark');
+  });
+
+  it('tapping Light calls setSetting and updates store to light', async () => {
+    mockGetSetting.mockReturnValue(undefined);
+    const { getByLabelText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    await act(async () => {});
+
+    await act(async () => {
+      fireEvent.press(getByLabelText('Light theme'));
+    });
+
+    expect(mockSetSetting).toHaveBeenCalledWith({}, 'theme_preference', 'light');
+    expect(useAppStore.getState().themePreference).toBe('light');
+  });
+
+  it('tapping System after override reverts store to system', async () => {
+    useAppStore.getState().setThemePreference('dark');
+    mockGetSetting.mockReturnValue(undefined);
+    const { getByLabelText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    await act(async () => {});
+
+    await act(async () => {
+      fireEvent.press(getByLabelText('System theme'));
+    });
+
+    expect(mockSetSetting).toHaveBeenCalledWith({}, 'theme_preference', 'system');
+    expect(useAppStore.getState().themePreference).toBe('system');
+  });
+
+  it('shows Snackbar when setSetting throws on theme change and store is not mutated', async () => {
+    mockGetSetting.mockReturnValue(undefined);
+    mockSetSetting.mockImplementation((_db: any, key: string) => {
+      if (key === 'theme_preference') throw new Error('db write error');
+    });
+    const { getByLabelText, getByText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    await act(async () => {});
+
+    await act(async () => {
+      fireEvent.press(getByLabelText('Dark theme'));
+    });
+
+    expect(getByText('Could not save appearance setting')).toBeTruthy();
+    expect(useAppStore.getState().themePreference).toBe('system');
+  });
+
+  it('renders with pre-existing light themePreference showing Light segment active', async () => {
+    useAppStore.getState().setThemePreference('light');
+    mockGetSetting.mockReturnValue(undefined);
+    const { getByLabelText } = render(<SettingsScreen />, { wrapper: Wrapper });
+    await act(async () => {});
+    expect(useAppStore.getState().themePreference).toBe('light');
+    await act(async () => {
+      fireEvent.press(getByLabelText('System theme'));
+    });
+    expect(mockSetSetting).toHaveBeenCalledWith({}, 'theme_preference', 'system');
+    expect(useAppStore.getState().themePreference).toBe('system');
   });
 });

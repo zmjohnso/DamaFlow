@@ -62,6 +62,11 @@ export default function RootLayout() {
         seedSkillCatalog(db);
         const setting = getSetting(db, 'onboarding_complete');
         useAppStore.getState().setOnboardingComplete(!!setting);
+        try {
+          const rawTheme = getSetting(db, 'theme_preference');
+          const validTheme = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
+          useAppStore.getState().setThemePreference(validTheme);
+        } catch { /* leave default 'system' */ }
         useQueueStore.getState().loadQueue();
         setDbReady(true);
       })
@@ -78,8 +83,13 @@ export default function RootLayout() {
 
 function RootLayoutNav({ onboardingComplete }: { onboardingComplete: boolean }) {
   const colorScheme = useColorScheme();
+  const themePreference = useAppStore(state => state.themePreference);
+  const activeTheme =
+    themePreference === 'light' ? lightTheme :
+    themePreference === 'dark'  ? darkTheme  :
+    colorScheme === 'dark'      ? darkTheme  : lightTheme;
   return (
-    <PaperProvider theme={colorScheme === 'dark' ? darkTheme : lightTheme}>
+    <PaperProvider theme={activeTheme}>
       {!onboardingComplete && <Redirect href="/onboarding" />}
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

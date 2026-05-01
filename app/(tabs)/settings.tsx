@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Dialog, IconButton, Portal, Snackbar, Surface, Switch, Text, TouchableRipple, useTheme } from 'react-native-paper';
+import { Button, Dialog, IconButton, Portal, Snackbar, SegmentedButtons, Surface, Switch, Text, TouchableRipple, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { db } from '../../lib/db/client';
 import { getSetting, setSetting, resetAllData, getNewSkillCap } from '../../lib/db/queries';
 import useQueueStore from '../../store/queueStore';
+import useAppStore, { type ThemePreference } from '../../store/appStore';
 import {
   getNotificationSettings,
   requestAndConfigureNotifications,
@@ -39,6 +40,9 @@ function formatTime(date: Date): string {
 
 export default function SettingsScreen() {
   const theme = useTheme();
+  const themePreference = useAppStore(state => state.themePreference);
+  const setThemePreference = useAppStore(state => state.setThemePreference);
+
   const [value, setValue] = useState<number>(() => {
     try {
       return getNewSkillCap(db);
@@ -48,6 +52,18 @@ export default function SettingsScreen() {
   });
   const [errorVisible, setErrorVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const handleThemeChange = (val: string) => {
+    if (val !== 'system' && val !== 'light' && val !== 'dark') return;
+    const pref = val as ThemePreference;
+    try {
+      setSetting(db, 'theme_preference', pref);
+      setThemePreference(pref);
+    } catch {
+      setErrorMessage('Could not save appearance setting');
+      setErrorVisible(true);
+    }
+  };
 
   // Notification state (Story 7.2)
   const [notificationEnabled, setNotificationEnabled] = useState(false);
@@ -170,6 +186,7 @@ export default function SettingsScreen() {
       setResetDialogVisible(false);
       await cancelAllReminders();
       resetAllData(db);
+      useAppStore.getState().setThemePreference('system');
       useQueueStore.getState().loadQueue();
       router.replace('/onboarding');
     } catch {
@@ -182,6 +199,25 @@ export default function SettingsScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
       <ScrollView>
         <Surface style={styles.surface}>
+        <View style={styles.section}>
+          <Text variant="titleSmall" style={[styles.sectionHeader, { color: theme.colors.onSurfaceVariant }]} accessibilityRole="header">
+            Appearance
+          </Text>
+          <View style={styles.segmentedRow}>
+            <SegmentedButtons
+              value={themePreference}
+              onValueChange={handleThemeChange}
+              buttons={[
+                { value: 'system', label: 'System', accessibilityLabel: 'System theme' },
+                { value: 'light',  label: 'Light',  accessibilityLabel: 'Light theme' },
+                { value: 'dark',   label: 'Dark',   accessibilityLabel: 'Dark theme' },
+              ]}
+            />
+          </View>
+        </View>
+
+        <View style={styles.sectionDivider} />
+
         <View style={styles.section}>
           <Text variant="titleSmall" style={[styles.sectionHeader, { color: theme.colors.onSurfaceVariant }]} accessibilityRole="header">
             Practice
@@ -339,5 +375,9 @@ const styles = StyleSheet.create({
   valueText: {
     minWidth: 32,
     textAlign: 'center',
+  },
+  segmentedRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
 });
