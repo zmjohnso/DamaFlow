@@ -202,7 +202,7 @@ describe('GearScreen', () => {
     await act(async () => {});
     fireEvent.press(getByLabelText('Kendama A, 0 string replacements'));
 
-    expect(router.push).toHaveBeenCalledWith('/equipment/1');
+    expect(router.push).toHaveBeenCalledWith('/(tabs)/equipment/1');
   });
 
   // Story 6.5: Delete Kendama — list reload on focus

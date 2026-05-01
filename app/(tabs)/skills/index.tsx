@@ -34,7 +34,7 @@ function SkillRow({ skill, masteredColor, outlineColor }: SkillRowProps) {
       accessible={true}
       accessibilityLabel={label}
       accessibilityRole="button"
-      onPress={() => router.push(`/skills/${skill.id}`)}
+      onPress={() => router.push(`/(tabs)/skills/${skill.id}`)}
     >
       <FontAwesome
         name={skill.mastered ? 'check-circle' : 'circle-o'}

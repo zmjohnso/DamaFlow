@@ -163,7 +163,7 @@ export default function GearScreen() {
         <FlashList<EquipmentWithCount>
           data={equipmentList}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <GearRow item={item} onPress={() => router.push(`/equipment/${item.id}`)} />}
+          renderItem={({ item }) => <GearRow item={item} onPress={() => router.push(`/(tabs)/equipment/${item.id}`)} />}
           estimatedItemSize={72}
           style={styles.list}
         />

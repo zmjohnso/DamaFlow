@@ -147,7 +147,7 @@ describe('SkillsScreen', () => {
     const { getByLabelText } = render(<SkillsScreen />, { wrapper: Wrapper });
     await act(async () => {});
     fireEvent.press(getByLabelText('Big Cup, beginner, not yet mastered'));
-    expect(router.push).toHaveBeenCalledWith('/skills/1');
+    expect(router.push).toHaveBeenCalledWith('/(tabs)/skills/1');
   });
 
   it('skill rows have accessibilityRole "button"', async () => {
