@@ -11,6 +11,7 @@ const mockCancelAllScheduledNotificationsAsync = jest.fn();
 
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), navigate: jest.fn() },
+  useFocusEffect: (cb: () => void) => cb(),
 }));
 
 jest.mock('@/lib/db/client', () => ({ db: {} }));

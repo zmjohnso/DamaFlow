@@ -70,6 +70,17 @@ jest.mock('@/lib/fsrs/scheduler', () => ({
     state: 2,
     due: '2026-05-01T00:00:00.000Z',
   })),
+  scheduleNew: jest.fn(() => ({
+    skill_id: 1,
+    stability: 1,
+    difficulty: 0.3,
+    elapsed_days: 0,
+    scheduled_days: 1,
+    reps: 1,
+    lapses: 0,
+    state: 1,
+    due: '2026-05-03T15:10:00.000Z',
+  })),
 }));
 
 const mockInsertSession = jest.fn();
@@ -87,6 +98,7 @@ jest.mock('@/lib/db/queries', () => ({
   getSkillProgressById: jest.fn(() => undefined),
   getLastSession: jest.fn(() => undefined),
   updateSkillProgress: jest.fn(),
+  bulkInsertSkillProgress: jest.fn(),
   insertSession: (...args: unknown[]) => mockInsertSession(...args),
   setSetting: (...args: unknown[]) => mockSetSetting(...args),
   getAllEquipmentForPicker: () => mockGetAllEquipmentForPicker(),

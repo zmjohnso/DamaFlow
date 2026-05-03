@@ -11,8 +11,8 @@ import { requestAndConfigureNotifications } from "@/lib/notifications";
 import { customColors } from "@/lib/theme";
 import type { QueueItem } from "@/store/queueStore";
 import useQueueStore from "@/store/queueStore";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import { SectionList, StyleSheet, View, useColorScheme } from "react-native";
 import { Surface, Text, TouchableRipple, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -43,6 +43,12 @@ export default function TodayScreen() {
   const overdueColor = customColors[colorScheme ?? "light"].overdue;
 
   const queue = useQueueStore((state) => state.queue);
+  const loadQueue = useQueueStore((state) => state.loadQueue);
+
+  useFocusEffect(useCallback(() => {
+    loadQueue();
+  }, [loadQueue]));
+
   const [masteredCount, setMasteredCount] = useState(0);
   const [sessionsThisWeek, setSessionsThisWeek] = useState(0);
   const [isFirstCompletion, setIsFirstCompletion] = useState(false);
