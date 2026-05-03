@@ -17,7 +17,8 @@ import {
 } from '@/lib/db/queries';
 import useSessionStore from '@/store/sessionStore';
 import useQueueStore from '@/store/queueStore';
-import { reschedule } from '@/lib/fsrs/scheduler';
+import { reschedule, scheduleNew } from '@/lib/fsrs/scheduler';
+import { bulkInsertSkillProgress } from '@/lib/db/queries';
 import type { Grade } from '@/lib/fsrs/types';
 import type { EquipmentPickerItem } from '@/lib/db/queries';
 
@@ -123,6 +124,9 @@ export default function PracticeScreen() {
         if (update) {
           updateSkillProgress(db, currentSkillId, update);
         }
+      } else {
+        // First-ever practice of this skill — create initial FSRS record
+        bulkInsertSkillProgress(db, [scheduleNew(currentSkillId, rating as Grade)]);
       }
       // Insert session — DB write before navigation (NFR4)
       // Guard: if selected equipment was deleted since picker opened, fall back to null

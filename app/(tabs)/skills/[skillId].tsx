@@ -11,7 +11,7 @@ import {
   Switch,
   TouchableRipple,
 } from 'react-native-paper';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import TierBadge from '@/components/TierBadge';
@@ -264,6 +264,14 @@ export default function SkillDetailScreen() {
           Watch Tutorial
         </Button>
       ) : null}
+      <Button
+        mode="contained"
+        onPress={() => router.push({ pathname: '/(tabs)/practice/[skillId]', params: { skillId: parsedSkillId } })}
+        accessibilityLabel={`Practice ${skill.name}`}
+        style={styles.practiceButton}
+      >
+        Practice
+      </Button>
       <View style={styles.masteryRow}>
         <Text variant="bodyMedium" style={{ flex: 1 }}>
           {progress?.mastered ? 'Mastered' : 'Not mastered'}
@@ -394,6 +402,7 @@ const styles = StyleSheet.create({
   skillName: { marginBottom: 4 },
   description: { marginTop: 8 },
   tutorialButton: { marginTop: 8, alignSelf: 'flex-start' },
+  practiceButton: { alignSelf: 'flex-start' },
   historyHeading: { marginTop: 16, marginBottom: 4 },
   masteryRow: {
     flexDirection: 'row',

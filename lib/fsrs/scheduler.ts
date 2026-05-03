@@ -89,6 +89,16 @@ export function reschedule(
   return schedule(row, rating);
 }
 
+export function scheduleNew(
+  skillId: number,
+  rating: Grade,
+): BulkInitResult {
+  const now = new Date();
+  const card = createEmptyCard(now);
+  const result = f.next(card, now, rating);
+  return { skill_id: skillId, ...fromCard(result.card) };
+}
+
 export function bulkInit(
   skillIds: number[],
   masteredAt: string,

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
-import { reschedule } from '@/lib/fsrs/scheduler';
+import { reschedule, scheduleNew } from '@/lib/fsrs/scheduler';
 import type { SkillProgressRow } from '@/lib/fsrs/types';
 
 type RatingRowProps = {
@@ -42,9 +42,10 @@ function formatIntervalLong(scheduledDays: number): string {
 export default function RatingRow({ skillProgress, onRate }: RatingRowProps) {
   // Compute interval preview for all 4 ratings once — pure JS math (NFR2: <100ms)
   const intervals = useMemo(() => {
-    if (!skillProgress) return null;
     return RATINGS.map(({ value }) => {
-      const update = reschedule(skillProgress, value);
+      const update = skillProgress
+        ? reschedule(skillProgress, value)
+        : scheduleNew(0, value);
       return update ? update.scheduled_days : null;
     });
   }, [skillProgress]);

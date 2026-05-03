@@ -10,6 +10,10 @@ jest.mock('@/lib/fsrs/scheduler', () => ({
     const intervals: Record<number, number> = { 1: 1, 2: 3, 3: 7, 4: 21 };
     return { scheduled_days: intervals[rating] ?? 1 };
   }),
+  scheduleNew: jest.fn((_: unknown, rating: number) => {
+    const intervals: Record<number, number> = { 1: 1, 2: 3, 3: 7, 4: 21 };
+    return { scheduled_days: intervals[rating] ?? 1 };
+  }),
 }));
 
 const MOCK_PROGRESS = {
@@ -126,11 +130,14 @@ describe('RatingRow', () => {
     expect(onRate).toHaveBeenCalledWith(4);
   });
 
-  it('renders fallback "—" labels when skillProgress is undefined', () => {
-    const { getAllByText } = render(
+  it('renders interval previews when skillProgress is undefined', () => {
+    const { getByText } = render(
       <RatingRow skillProgress={undefined} onRate={() => {}} />,
       { wrapper: Wrapper }
     );
-    expect(getAllByText(/—/).length).toBe(4);
+    expect(getByText(/Again/)).toBeTruthy();
+    expect(getByText(/Hard/)).toBeTruthy();
+    expect(getByText(/Good/)).toBeTruthy();
+    expect(getByText(/Easy/)).toBeTruthy();
   });
 });
