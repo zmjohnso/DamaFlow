@@ -3,9 +3,10 @@ import { useFonts } from 'expo-font';
 import { Redirect, Stack, ErrorBoundaryProps } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { PaperProvider, Text, Button } from 'react-native-paper';
+import { View, StyleSheet, useColorScheme as useRNColorScheme } from 'react-native';
+import { PaperProvider, Text, Button, useTheme } from 'react-native-paper';
 import 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { db, runMigrations } from '@/lib/db/client';
@@ -15,19 +16,31 @@ import { lightTheme, darkTheme } from '@/lib/theme';
 import useQueueStore from '@/store/queueStore';
 import useAppStore from '@/store/appStore';
 
+function ErrorContent({ retry }: { retry: () => void }) {
+  const theme = useTheme();
+  return (
+    <SafeAreaView style={[styles.errorContainer, { backgroundColor: theme.colors.background }]}>
+      <FontAwesome name="exclamation-circle" size={48} color={theme.colors.error} style={styles.errorIcon} />
+      <Text variant="headlineSmall" style={[styles.errorTitle, { color: theme.colors.onBackground }]}>
+        Oops
+      </Text>
+      <Text variant="bodyMedium" style={[styles.errorMessage, { color: theme.colors.onSurfaceVariant }]}>
+        Something went wrong. Your data is safe.
+      </Text>
+      <Button mode="contained" onPress={retry} style={styles.errorButton}>
+        Restart the app
+      </Button>
+    </SafeAreaView>
+  );
+}
+
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   console.error('[ErrorBoundary]', error);
+  const scheme = useRNColorScheme();
+  const theme = scheme === 'dark' ? darkTheme : lightTheme;
   return (
-    <PaperProvider>
-      <View style={styles.errorContainer}>
-        <Text variant="headlineSmall">Something went wrong</Text>
-        <Text variant="bodyMedium" style={styles.errorMessage}>
-          An unexpected error occurred. Your data is safe.
-        </Text>
-        <Button mode="contained" onPress={retry} style={styles.errorButton}>
-          Restart the app
-        </Button>
-      </View>
+    <PaperProvider theme={theme}>
+      <ErrorContent retry={retry} />
     </PaperProvider>
   );
 }
@@ -101,7 +114,9 @@ function RootLayoutNav({ onboardingComplete }: { onboardingComplete: boolean }) 
 }
 
 const styles = StyleSheet.create({
-  errorContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  errorMessage: { marginTop: 8, marginBottom: 24, textAlign: 'center' },
-  errorButton: { marginTop: 8 },
+  errorContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  errorIcon: { marginBottom: 16 },
+  errorTitle: { marginBottom: 8 },
+  errorMessage: { textAlign: 'center', marginBottom: 32 },
+  errorButton: { alignSelf: 'stretch' },
 });
