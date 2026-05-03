@@ -15,6 +15,7 @@ jest.mock('expo-notifications', () => ({
   scheduleNotificationAsync: (...args: any[]) => mockScheduleNotificationAsync(...args),
   cancelAllScheduledNotificationsAsync: (...args: any[]) => mockCancelAllScheduledNotificationsAsync(...args),
   getAllScheduledNotificationsAsync: (...args: any[]) => mockGetAllScheduledNotificationsAsync(...args),
+  SchedulableTriggerInputTypes: { DAILY: 'daily' },
 }));
 
 const mockGetSetting = jest.fn();
@@ -106,7 +107,7 @@ describe('scheduleDailyReminder', () => {
           title: 'DamaFlow',
           body: 'Time to practice. 0 skills due today.',
         }),
-        trigger: expect.objectContaining({ hour: 8, minute: 30, repeats: true }),
+        trigger: expect.objectContaining({ type: 'daily', hour: 8, minute: 30 }),
       }),
     );
   });
@@ -115,7 +116,7 @@ describe('scheduleDailyReminder', () => {
     await scheduleDailyReminder(db, { hour: 21, minute: 45 });
     expect(mockScheduleNotificationAsync).toHaveBeenCalledWith(
       expect.objectContaining({
-        trigger: expect.objectContaining({ hour: 21, minute: 45, repeats: true }),
+        trigger: expect.objectContaining({ type: 'daily', hour: 21, minute: 45 }),
       }),
     );
   });

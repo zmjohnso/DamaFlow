@@ -45,9 +45,9 @@ export async function scheduleDailyReminder(db: DB, timeOverride?: { hour: numbe
       body: `Time to practice. ${count} skills due today.`,
     },
     trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour: time.hour,
       minute: time.minute,
-      repeats: true,
     },
   });
 }
