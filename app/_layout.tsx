@@ -1,7 +1,16 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import { Redirect, Stack, ErrorBoundaryProps } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, useColorScheme as useRNColorScheme } from 'react-native';
 import { PaperProvider, Text, Button, useTheme } from 'react-native-paper';

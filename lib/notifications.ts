@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { Platform } from 'react-native';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import type * as schema from './db/schema';
 import { getSetting, setSetting } from './db/queries';
@@ -6,6 +7,7 @@ import { getSetting, setSetting } from './db/queries';
 type DB = BaseSQLiteDatabase<'sync', any, typeof schema>;
 
 const DEFAULT_TIME = '09:00';
+const ANDROID_CHANNEL_ID = 'daily-reminder';
 
 export function parseTime(timeString: string): { hour: number; minute: number } {
   const match = /^([0-9]{1,2}):([0-9]{2})$/.exec(timeString);
@@ -35,9 +37,19 @@ function getDueTodayCount(): number {
   return queue.filter((i: { state: number; due: string }) => i.state !== 0 && i.due.slice(0, 10) <= today).length;
 }
 
+async function ensureAndroidChannel(): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  await Notifications.setNotificationChannelAsync(ANDROID_CHANNEL_ID, {
+    name: 'Daily Practice Reminder',
+    importance: Notifications.AndroidImportance.DEFAULT,
+    vibrationPattern: [0, 250, 250, 250],
+  });
+}
+
 export async function scheduleDailyReminder(db: DB, timeOverride?: { hour: number; minute: number }): Promise<void> {
   const time = timeOverride ?? parseTime(getNotificationSettings(db).time);
   const count = getDueTodayCount();
+  await ensureAndroidChannel();
   await Notifications.cancelAllScheduledNotificationsAsync();
   await Notifications.scheduleNotificationAsync({
     content: {
@@ -48,6 +60,7 @@ export async function scheduleDailyReminder(db: DB, timeOverride?: { hour: numbe
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour: time.hour,
       minute: time.minute,
+      channelId: Platform.OS === 'android' ? ANDROID_CHANNEL_ID : undefined,
     },
   });
 }

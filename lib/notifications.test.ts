@@ -9,13 +9,16 @@ const mockRequestPermissionsAsync = jest.fn();
 const mockScheduleNotificationAsync = jest.fn();
 const mockCancelAllScheduledNotificationsAsync = jest.fn();
 const mockGetAllScheduledNotificationsAsync = jest.fn();
+const mockSetNotificationChannelAsync = jest.fn().mockResolvedValue(null);
 
 jest.mock('expo-notifications', () => ({
   requestPermissionsAsync: (...args: any[]) => mockRequestPermissionsAsync(...args),
   scheduleNotificationAsync: (...args: any[]) => mockScheduleNotificationAsync(...args),
   cancelAllScheduledNotificationsAsync: (...args: any[]) => mockCancelAllScheduledNotificationsAsync(...args),
   getAllScheduledNotificationsAsync: (...args: any[]) => mockGetAllScheduledNotificationsAsync(...args),
+  setNotificationChannelAsync: (...args: any[]) => mockSetNotificationChannelAsync(...args),
   SchedulableTriggerInputTypes: { DAILY: 'daily' },
+  AndroidImportance: { DEFAULT: 5 },
 }));
 
 const mockGetSetting = jest.fn();
