@@ -13,7 +13,7 @@ import type { QueueItem } from "@/store/queueStore";
 import useQueueStore from "@/store/queueStore";
 import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
-import { SectionList, StyleSheet, View, useColorScheme } from "react-native";
+import { SectionList, StyleSheet, Text as RNText, View, useColorScheme } from "react-native";
 import { Surface, Text, TouchableRipple, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -122,14 +122,13 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {dueTodayCount}
             </Text>
-            <Text
-              variant="labelSmall"
+            <RNText
+              style={[styles.chipLabel, { color: theme.colors.onSurfaceVariant }]}
               numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{ color: theme.colors.onSurfaceVariant }}
+              allowFontScaling={false}
             >
               due today
-            </Text>
+            </RNText>
           </Surface>
         </View>
 
@@ -144,14 +143,13 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {masteredCount}
             </Text>
-            <Text
-              variant="labelSmall"
+            <RNText
+              style={[styles.chipLabel, { color: theme.colors.onSurfaceVariant }]}
               numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{ color: theme.colors.onSurfaceVariant }}
+              allowFontScaling={false}
             >
               mastered
-            </Text>
+            </RNText>
           </Surface>
         </TouchableRipple>
 
@@ -161,14 +159,13 @@ export default function TodayScreen() {
             <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
               {sessionsThisWeek}
             </Text>
-            <Text
-              variant="labelSmall"
+            <RNText
+              style={[styles.chipLabel, { color: theme.colors.onSurfaceVariant }]}
               numberOfLines={1}
-              adjustsFontSizeToFit
-              style={{ color: theme.colors.onSurfaceVariant }}
+              allowFontScaling={false}
             >
               this week
-            </Text>
+            </RNText>
           </Surface>
         </View>
       </View>
@@ -268,10 +265,14 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderRadius: 12,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     alignItems: "center",
     justifyContent: "center",
     height: 72,
+  },
+  chipLabel: {
+    fontSize: 11,
+    textAlign: "center",
   },
   sectionHeader: {
     paddingHorizontal: 16,

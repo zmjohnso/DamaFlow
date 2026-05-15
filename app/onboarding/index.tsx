@@ -180,7 +180,7 @@ export default function OnboardingScreen() {
   const currentTier = tierMap[step as Exclude<Step, "welcome" | "complete">];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.tierContainer}>
         <Text variant="headlineMedium" style={styles.tierHeading}>
           {currentTier.label} Skills
