@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, gte, isNull, lt, lte } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, isNull, lt, lte, sql } from 'drizzle-orm';
 import type { BaseSQLiteDatabase } from 'drizzle-orm/sqlite-core';
 import { equipment, sessions, settings, skill_progress, skills, string_replacements } from './schema';
 import type * as schema from './schema';
@@ -345,7 +345,8 @@ export function getSessionsForSkillWithEquipment(
 }
 
 // Returns all skill_progress rows with due <= today, joined with skills.
-// `today` is a 'YYYY-MM-DD' string. ISO 8601 comparison is lexicographic — safe for TEXT columns.
+// `today` is a 'YYYY-MM-DD' string. Uses date() to strip the time component from the stored ISO
+// timestamp before comparing — bare string comparison would exclude skills due at any time today.
 // Mastery does not exempt a skill from scheduled reviews (Story 4.8).
 export function getQueueRows(db: DB, today: string): QueueRow[] {
   return db
@@ -358,7 +359,7 @@ export function getQueueRows(db: DB, today: string): QueueRow[] {
     })
     .from(skill_progress)
     .innerJoin(skills, eq(skill_progress.skill_id, skills.id))
-    .where(lte(skill_progress.due, today))
+    .where(lte(sql`date(${skill_progress.due})`, today))
     .all();
 }
 
@@ -391,7 +392,8 @@ export type OverdueMasteredSkill = {
 };
 
 // Returns mastered skills with a due date strictly before today.
-// `today` is a 'YYYY-MM-DD' string. Lexicographic comparison is safe for TEXT ISO 8601 columns.
+// `today` is a 'YYYY-MM-DD' string. Uses date() to strip the time component from the stored ISO
+// timestamp before comparing — mastered skills due at any time today are correctly excluded.
 // Sorted by due ASC so most overdue skills appear first.
 export function getOverdueMasteredSkills(
   db: DB,
@@ -406,7 +408,7 @@ export function getOverdueMasteredSkills(
     })
     .from(skill_progress)
     .innerJoin(skills, eq(skill_progress.skill_id, skills.id))
-    .where(and(eq(skill_progress.mastered, true), lt(skill_progress.due, today)))
+    .where(and(eq(skill_progress.mastered, true), lt(sql`date(${skill_progress.due})`, today)))
     .orderBy(asc(skill_progress.due))
     .all();
 }

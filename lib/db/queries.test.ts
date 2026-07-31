@@ -15,6 +15,7 @@ import {
   updateEquipment, deleteEquipment, getAllEquipmentWithReplacementCount,
   getStringReplacementsForEquipment, insertStringReplacement, deleteStringReplacement,
   getAllEquipmentForPicker, getSessionsForSkillWithEquipment, resetAllData,
+  getQueueRows, getOverdueMasteredSkills,
 } from './queries';
 import { skills } from './schema';
 import * as schema from './schema';
@@ -958,5 +959,127 @@ describe('resetAllData', () => {
     resetAllData(db);
 
     expect(getAllSkills(db)).toHaveLength(69);
+  });
+});
+
+const QUEUE_TODAY = '2026-06-27';
+
+function insertSkillProgress(
+  db: ReturnType<typeof createTestDb>,
+  skillId: number,
+  due: string,
+  mastered = false,
+) {
+  db.insert(schema.skill_progress).values({
+    skill_id: skillId,
+    stability: 1,
+    difficulty: 0.3,
+    elapsed_days: 0,
+    scheduled_days: 1,
+    reps: 1,
+    lapses: 0,
+    state: 2,
+    due,
+    mastered,
+  }).run();
+}
+
+describe('getQueueRows', () => {
+  const TODAY = QUEUE_TODAY;
+
+  it('returns empty array when no skill_progress rows exist', () => {
+    const db = createTestDb();
+    expect(getQueueRows(db, TODAY)).toHaveLength(0);
+  });
+
+  it('includes skill with ISO timestamp due today (morning UTC)', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-27T06:00:00.000Z');
+    const result = getQueueRows(db, TODAY);
+    expect(result).toHaveLength(1);
+    expect(result[0].skill_id).toBe(skillId);
+  });
+
+  it('includes skill with ISO timestamp due today (evening UTC)', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-27T22:00:00.000Z');
+    expect(getQueueRows(db, TODAY)).toHaveLength(1);
+  });
+
+  it('includes skill with ISO timestamp due yesterday', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-26T14:00:00.000Z');
+    expect(getQueueRows(db, TODAY)).toHaveLength(1);
+  });
+
+  it('excludes skill with ISO timestamp due tomorrow', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-28T00:00:00.000Z');
+    expect(getQueueRows(db, TODAY)).toHaveLength(0);
+  });
+
+  it('returns correct skill fields in each row', () => {
+    const db = createTestDb();
+    const skill = getAllSkills(db)[0];
+    insertSkillProgress(db, skill.id, '2026-06-27T14:00:00.000Z');
+    const result = getQueueRows(db, TODAY);
+    expect(result).toHaveLength(1);
+    expect(result[0].skill_id).toBe(skill.id);
+    expect(result[0].skill_name).toBe(skill.name);
+    expect(result[0].tier).toBe(skill.tier);
+    expect(result[0].due).toBe('2026-06-27T14:00:00.000Z');
+    expect(result[0].state).toBe(2);
+  });
+});
+
+describe('getOverdueMasteredSkills', () => {
+  const TODAY = QUEUE_TODAY;
+
+  it('returns empty array when no skill_progress rows exist', () => {
+    const db = createTestDb();
+    expect(getOverdueMasteredSkills(db, TODAY)).toHaveLength(0);
+  });
+
+  it('includes mastered skill with ISO timestamp due yesterday', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-26T14:00:00.000Z', true);
+    expect(getOverdueMasteredSkills(db, TODAY)).toHaveLength(1);
+  });
+
+  it('excludes mastered skill with ISO timestamp due today', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-27T06:00:00.000Z', true);
+    expect(getOverdueMasteredSkills(db, TODAY)).toHaveLength(0);
+  });
+
+  it('excludes mastered skill with ISO timestamp due tomorrow', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-28T00:00:00.000Z', true);
+    expect(getOverdueMasteredSkills(db, TODAY)).toHaveLength(0);
+  });
+
+  it('excludes non-mastered skill even when due yesterday', () => {
+    const db = createTestDb();
+    const skillId = getAllSkills(db)[0].id;
+    insertSkillProgress(db, skillId, '2026-06-26T14:00:00.000Z', false);
+    expect(getOverdueMasteredSkills(db, TODAY)).toHaveLength(0);
+  });
+
+  it('returns skills sorted by due ASC', () => {
+    const db = createTestDb();
+    const allSkills = getAllSkills(db);
+    insertSkillProgress(db, allSkills[0].id, '2026-06-25T14:00:00.000Z', true);
+    insertSkillProgress(db, allSkills[1].id, '2026-06-24T14:00:00.000Z', true);
+    const result = getOverdueMasteredSkills(db, TODAY);
+    expect(result).toHaveLength(2);
+    expect(result[0].due).toBe('2026-06-24T14:00:00.000Z');
+    expect(result[1].due).toBe('2026-06-25T14:00:00.000Z');
   });
 });
