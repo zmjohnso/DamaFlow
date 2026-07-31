@@ -63,7 +63,12 @@ export default function TodayScreen() {
   }, []);
 
   useEffect(() => {
-    if (queue.length !== 0) return;
+    if (queue.length !== 0) {
+      // Reset so a later, unrelated empty queue doesn't inherit a stale
+      // first-completion flag from an earlier trigger this session.
+      setIsFirstCompletion(false);
+      return;
+    }
     try {
       const seen = getSetting(db, "first_completion_shown");
       if (seen === undefined) {
@@ -75,7 +80,7 @@ export default function TodayScreen() {
     }
   }, [queue.length]);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     try {
       const pending = getSetting(db, "pending_notification_prompt");
       if (pending === "true") {
@@ -87,7 +92,7 @@ export default function TodayScreen() {
     } catch {
       // silently ignore — queue render is never blocked
     }
-  }, []);
+  }, []));
 
   const today = new Date().toLocaleDateString("sv");
 
