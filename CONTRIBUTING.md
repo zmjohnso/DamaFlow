@@ -1,6 +1,6 @@
 # Contributing to DamaFlow
 
-Thank you for your interest in contributing! DamaFlow is an open-source kendama practice tracker licensed under AGPL v3.
+Thank you for your interest in contributing! DamaFlow is an open-source kendama practice tracker licensed under the MIT License.
 
 ## Prerequisites
 
@@ -47,7 +47,7 @@ All commits must include a sign-off:
 git commit -s -m "your commit message"
 ```
 
-The `-s` flag appends `Signed-off-by: Your Name <email@example.com>` to your commit message. This certifies that you have the right to submit the contribution under the AGPL v3 license per the [Developer Certificate of Origin](https://developercertificate.org/).
+The `-s` flag appends `Signed-off-by: Your Name <email@example.com>` to your commit message. This certifies that you have the right to submit the contribution under the MIT License per the [Developer Certificate of Origin](https://developercertificate.org/).
 
 **Why we require this:** DCO sign-off is a lightweight legal mechanism that ensures every contributor affirms they have the right to contribute the code under the project's license. It protects both contributors and the project.
 

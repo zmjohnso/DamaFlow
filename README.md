@@ -111,7 +111,7 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting.
 
 ## License
 
-[GNU Affero General Public License v3.0](./LICENSE) (AGPL-3.0)
+[MIT License](./LICENSE)
 
 ---
 
