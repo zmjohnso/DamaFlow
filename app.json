@@ -39,7 +39,8 @@
       "expo-router",
       "expo-sqlite",
       "expo-notifications",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "./plugins/withReleaseConfig.js"
     ],
     "experiments": {
       "typedRoutes": true
