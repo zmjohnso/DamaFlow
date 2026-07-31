@@ -152,6 +152,19 @@ describe('PracticeScreen', () => {
     expect(getByText('Skill not found.')).toBeTruthy();
   });
 
+  it('primes the session store with this skill even when a later DB read throws', () => {
+    // getSkillById succeeds first, so the screen renders normally, but a
+    // subsequent read (equipment picker) throws — currentSkillId must still
+    // be set to this screen's skill, not left stale from a previous visit.
+    mockGetAllEquipmentForPicker.mockImplementationOnce(() => {
+      throw new Error('db unavailable');
+    });
+    const { getByText } = render(<PracticeScreen />, { wrapper: Wrapper });
+    expect(getByText('Big Cup')).toBeTruthy();
+    expect(mockSetCurrentSkill).toHaveBeenCalledWith(1);
+    expect(mockSetReps).toHaveBeenCalledWith(null);
+  });
+
   it('renders Watch Tutorial button when video_url is valid', () => {
     const { getByText } = render(<PracticeScreen />, { wrapper: Wrapper });
     expect(getByText('Watch Tutorial')).toBeTruthy();

@@ -70,6 +70,11 @@ export default function PracticeScreen() {
       setLoaded(true);
       return;
     }
+    // Prime session store first, independent of the DB reads below — if any
+    // of those throw partway through, currentSkillId must still match this
+    // screen's skill rather than staying stale from a previously-viewed one.
+    useSessionStore.getState().setCurrentSkill(parsedSkillId);
+    useSessionStore.getState().setReps(null);
     try {
       setSkill(getSkillById(db, parsedSkillId));
       setProgress(getSkillProgressById(db, parsedSkillId));
@@ -77,9 +82,6 @@ export default function PracticeScreen() {
       // Load equipment for picker
       const equipment = getAllEquipmentForPicker(db);
       setEquipmentList(equipment);
-      // Prime session store for Story 4.5
-      useSessionStore.getState().setCurrentSkill(parsedSkillId);
-      useSessionStore.getState().setReps(null);
     } catch {
       // DB error — skill will be undefined, fallback renders
     }

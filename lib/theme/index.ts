@@ -13,13 +13,13 @@ export const lightTheme: MD3Theme = {
     onSurfaceVariant: '#6B5C52',
     outline: '#7A6A5E',
     outlineVariant: '#C8BAB0',
-    primary: '#A0724A',
+    primary: '#88603E', // darkened from #A0724A — restores WCAG AA (4.5:1+) against background/surface and for white button text
     onPrimary: '#FFFFFF',
     primaryContainer: '#F0DEC8',
     onPrimaryContainer: '#3D2410',
     inverseSurface: '#2A2725',
     inverseOnSurface: '#F0EBE3',
-    error: '#B85C50',
+    error: '#9C4E44', // darkened from #B85C50 — restores WCAG AA (4.5:1+) for destructive-action text
   },
 };
 
@@ -50,7 +50,7 @@ export const darkTheme: MD3Theme = {
 // Usage: const colors = customColors[colorScheme ?? 'light'];
 export const customColors = {
   light: {
-    overdue: '#C17A14',  // amber — overdue skill section headers, left-border accent
+    overdue: '#905B0F',  // amber, darkened from #C17A14 — restores WCAG AA (4.5:1+) against background/surface for tag/header text
     mastered: '#5A8A5E', // muted green — mastered checkmarks, tier progress indicators
   },
   dark: {

@@ -17,9 +17,13 @@ npm run lint            # ESLint
 **Android APK build** requires Java 21 (not 17, not 25+):
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 21)
-cd android && ./gradlew assembleRelease
+cd android && ./gradlew assembleRelease -PreactNativeArchitectures=armeabi-v7a,arm64-v8a
 # Output: android/app/build/outputs/apk/release/app-release.apk
 ```
+The `-PreactNativeArchitectures` override is required for distributable builds — without
+it, the default `gradle.properties` value bundles x86/x86_64 native libraries too (needed
+only for emulators, never real devices), pushing the APK from ~42MB to ~81MB and over the
+50MB budget (NFR5). Leave the default in place for local `npm run android`/emulator use.
 
 ## Architecture
 

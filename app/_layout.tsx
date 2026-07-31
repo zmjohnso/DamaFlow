@@ -13,20 +13,40 @@ Notifications.setNotificationHandler({
 });
 import { useEffect, useState } from 'react';
 import { View, StyleSheet, useColorScheme as useRNColorScheme } from 'react-native';
-import { PaperProvider, Text, Button, useTheme } from 'react-native-paper';
+import { PaperProvider, Text, Button, Dialog, Portal, useTheme } from 'react-native-paper';
 import 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { db, runMigrations } from '@/lib/db/client';
 import { seedSkillCatalog } from '@/lib/db/seed';
-import { getSetting } from '@/lib/db/queries';
+import { getSetting, resetAllData } from '@/lib/db/queries';
 import { lightTheme, darkTheme } from '@/lib/theme';
 import useQueueStore from '@/store/queueStore';
 import useAppStore from '@/store/appStore';
 
 function ErrorContent({ retry }: { retry: () => void }) {
   const theme = useTheme();
+  const [resetDialogVisible, setResetDialogVisible] = useState(false);
+  const [resetStatus, setResetStatus] = useState<'idle' | 'done' | 'failed'>('idle');
+
+  const handleReset = () => {
+    setResetDialogVisible(false);
+    try {
+      resetAllData(db);
+      setResetStatus('done');
+    } catch {
+      setResetStatus('failed');
+    }
+  };
+
+  const message =
+    resetStatus === 'done'
+      ? 'Your data has been reset. Close and reopen the app to continue.'
+      : resetStatus === 'failed'
+      ? "Something went wrong. Your data is safe, but the reset couldn't complete automatically. Try restarting the app, or clear the app's storage from your device settings."
+      : 'Something went wrong. Your data is safe.';
+
   return (
     <SafeAreaView style={[styles.errorContainer, { backgroundColor: theme.colors.background }]}>
       <FontAwesome name="exclamation-circle" size={48} color={theme.colors.error} style={styles.errorIcon} />
@@ -34,11 +54,43 @@ function ErrorContent({ retry }: { retry: () => void }) {
         Oops
       </Text>
       <Text variant="bodyMedium" style={[styles.errorMessage, { color: theme.colors.onSurfaceVariant }]}>
-        Something went wrong. Your data is safe.
+        {message}
       </Text>
-      <Button mode="contained" onPress={retry} style={styles.errorButton}>
-        Restart the app
-      </Button>
+      {resetStatus !== 'done' && (
+        <Button mode="contained" onPress={retry} style={styles.errorButton}>
+          Restart the app
+        </Button>
+      )}
+      {resetStatus === 'idle' && (
+        <Button
+          mode="text"
+          textColor={theme.colors.error}
+          onPress={() => setResetDialogVisible(true)}
+          accessibilityLabel="Reset app data"
+        >
+          Reset App Data
+        </Button>
+      )}
+      <Portal>
+        <Dialog visible={resetDialogVisible} onDismiss={() => setResetDialogVisible(false)}>
+          <Dialog.Title accessibilityRole="header">Reset App Data?</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              This clears all skill progress, sessions, and equipment. This cannot be undone.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setResetDialogVisible(false)}>Cancel</Button>
+            <Button
+              onPress={handleReset}
+              mode="contained"
+              accessibilityLabel="Confirm reset, this cannot be undone"
+            >
+              Reset
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </SafeAreaView>
   );
 }
